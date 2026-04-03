@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para Voce</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-deep: #0d0508;
+      --bg-card: #1a0a0f;
+      --bg-mid: #2d1018;
+      --accent-gold: #d4a574;
+      --accent-rose: #c97b84;
+      --accent-warm: #e8b4b8;
+      --text-light: #fff5f5;
+      --text-muted: #a89090;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    .bg-atmosphere {
+      position: fixed; inset: 0;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(201, 123, 132, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(45, 16, 24, 0.8) 0%, transparent 100%),
+        var(--bg-deep);
+      z-index: -2;
+    }
+
+    .particles-container {
+      position: fixed; inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+      opacity: 0;
+      animation: float-particle 8s infinite ease-in-out;
+    }
+
+    .particle.heart {
+      width: 12px; height: 12px;
+      background: none;
+      opacity: 0;
+    }
+
+    .particle.heart::before, .particle.heart::after {
+      content: '';
+      position: absolute;
+      width: 6px; height: 10px;
+      background: var(--accent-rose);
+      border-radius: 6px 6px 0 0;
+    }
+
+    .particle.heart::before { left: 0; transform: rotate(-45deg); transform-origin: bottom right; }
+    .particle.heart::after { right: 0; transform: rotate(45deg); transform-origin: bottom left; }
+
+    @keyframes float-particle {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+
+    .screen {
+      position: fixed; inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    .screen.active { opacity: 1; visibility: visible; }
+
+    .btn-romantic {
+      position: relative;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
+      border: none;
+      border-radius: 50px;
+      color: var(--bg-deep);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-romantic::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent-rose), var(--accent-gold));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .btn-romantic:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(212, 165, 116, 0.3);
+    }
+    .btn-romantic:hover::before { opacity: 1; }
+    .btn-romantic span { position: relative; z-index: 1; }
+    .btn-romantic:active { transform: translateY(-1px); }
+
+    .love-options { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+    .love-btn {
+      padding: 0.875rem 2rem;
+      border: 2px solid var(--accent-rose);
+      background: transparent;
+      color: var(--accent-warm);
+      border-radius: 50px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .love-btn:hover {
+      background: var(--accent-rose);
+      color: var(--bg-deep);
+      transform: scale(1.05);
+    }
+
+    .love-btn.yes {
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-rose));
+      border-color: transparent;
+      color: var(--bg-deep);
+    }
+    .love-btn.no { transition: all 0.1s ease; }
+
+    .gallery-container { width: 100%; max-width: 400px; position: relative; }
+    
+    .gallery-slide {
+      width: 100%;
+      aspect-ratio: 4/5;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .gallery-slide img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: opacity 0.5s ease;
+    }
+
+    .gallery-nav { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
+    
+    .gallery-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-dot.active {
+      background: var(--accent-gold);
+      transform: scale(1.3);
+    }
+
+    .music-btn {
+      position: fixed;
+      top: 1.5rem; right: 1.5rem;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(45, 16, 24, 0.8);
+      border: 1px solid rgba(212, 165, 116, 0.3);
+      color: var(--accent-gold);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .music-btn:hover {
+      background: rgba(45, 16, 24, 1);
+      border-color: var(--accent-gold);
+    }
+
+    .music-btn.playing .bar { animation: sound-bar 0.5s ease infinite alternate; }
+
+    .music-btn .bars { display: flex; gap: 2px; align-items: flex-end; height: 16px; }
+    .music-btn .bar { width: 3px; background: var(--accent-gold); border-radius: 2px; }
+    .music-btn .bar:nth-child(1) { height: 8px; animation-delay: 0s; }
+    .music-btn .bar:nth-child(2) { height: 14px; animation-delay: 0.1s; }
+    .music-btn .bar:nth-child(3) { height: 10px; animation-delay: 0.2s; }
+
+    @keyframes sound-bar { to { height: 16px; } }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .fade-in:nth-child(2) { transition-delay: 0.2s; }
+    .fade-in:nth-child(3) { transition-delay: 0.4s; }
+    .fade-in:nth-child(4) { transition-delay: 0.6s; }
+
+    .heart-beat { animation: heartbeat 1.2s ease-in-out infinite; }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.15); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.15); }
+      70% { transform: scale(1); }
+    }
+
+    .glow { filter: drop-shadow(0 0 20px rgba(212, 165, 116, 0.5)); }
+
+    #youtube-player {
+      position: fixed;
+      bottom: 0; right: 0;
+      width: 1px; height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-atmosphere"></div>
+  <div class="particles-container" id="particles"></div>
+
+  <button class="music-btn" id="musicBtn" aria-label="Toggle music">
+    <div class="bars">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+  </button>
+
+  <div id="youtube-player"></div>
+
+  <!-- ==================== SCREEN 1: INTRO ==================== -->
+  <section class="screen active" id="screen1">
+    <div class="text-center max-w-lg">
+      <p class="fade-in text-sm uppercase tracking-widest mb-4" style="color: var(--accent-gold);">
+        Para Meu Amor
+      </p>
+      
+      <h1 class="fade-in font-display text-4xl md:text-6xl font-semibold mb-6 leading-tight">
+        Tenho algo importante para te dizer...
+      </h1>
+      
+      <p class="fade-in text-lg mb-10" style="color: var(--text-muted);">
+        Prepare seu coracao para uma surpresa especial
+      </p>
+      
+      <!-- BOTÃO ATUALIZADO: Inicia o site E a música -->
+      <button class="btn-romantic fade-in" onclick="startExperience()">
+        <span>Descobrir</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN 2: FIRST MESSAGE ==================== -->
+  <section class="screen" id="screen2">
+    <div class="text-center max-w-lg">
+      <div class="mb-8">
+        <svg class="w-16 h-16 mx-auto glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="color: var(--accent-rose);">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+      </div>
+      
+      <p class="fade-in text-lg md:text-xl leading-relaxed mb-8" style="color: var(--text-light);">
+        Desde o momento em que te conheci, minha vida ganhou cores que eu nem sabia que existiam. 
+        Seu sorriso se tornou meu lugar favorito no mundo.
+      </p>
+      
+      <button class="btn-romantic fade-in" onclick="nextScreen(3)">
+        <span>Continuar</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN 3: GALLERY ==================== -->
+  <section class="screen" id="screen3">
+    <div class="text-center max-w-lg">
+      <h2 class="fade-in font-display text-3xl md:text-4xl font-semibold mb-6">
+        Nossos Momentos
+      </h2>
+      
+      <div class="gallery-container fade-in mb-8">
+        <div class="gallery-slide" id="gallerySlide">
+          <img src="https://racial-white-9gxmkt4uzl.edgeone.app/WhatsApp%20Image%202026-04-03%20at%2000.07.41.jpeg" 
+               alt="Nosso momento especial" id="galleryImg">
+        </div>
+        <div class="gallery-nav" id="galleryNav"></div>
+      </div>
+      
+      <button class="btn-romantic fade-in" onclick="nextScreen(4)">
+        <span>Continuar</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN 4: INTERACTIVE QUESTION ==================== -->
+  <section class="screen" id="screen4">
+    <div class="text-center max-w-lg">
+      <div class="mb-6">
+        <svg class="w-20 h-20 mx-auto heart-beat" viewBox="0 0 24 24" fill="currentColor" style="color: var(--accent-rose);">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+      
+      <h2 class="fade-in font-display text-3xl md:text-5xl font-semibold mb-10">
+        Voce me ama?
+      </h2>
+      
+      <div class="love-options fade-in">
+        <button class="love-btn yes" onclick="showLoveResponse()">Com certeza!</button>
+        <button class="love-btn yes" onclick="showLoveResponse()">Sim!</button>
+        <button class="love-btn no" id="noBtn" onmouseover="runAwayFromButton()" onclick="runAwayFromButton()">Nao</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN 5: LOVE RESPONSE ==================== -->
+  <section class="screen" id="screen5">
+    <div class="text-center max-w-lg">
+      <div class="mb-6">
+        <svg class="w-24 h-24 mx-auto heart-beat glow" viewBox="0 0 24 24" fill="currentColor" style="color: var(--accent-gold);">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+      
+      <h2 class="fade-in font-display text-2xl md:text-3xl font-semibold mb-4" style="color: var(--accent-gold);">
+        Eu sabia!
+      </h2>
+      
+      <p class="fade-in text-lg md:text-xl leading-relaxed mb-10" style="color: var(--text-light);">
+        Eu tambem te amo mais do que palavras podem expressar. 
+        Voce e o motivo dos meus melhores sorrisos.
+      </p>
+      
+      <button class="btn-romantic fade-in" onclick="nextScreen(6)">
+        <span>Uma ultima coisa...</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN 6: FINAL DECLARATION ==================== -->
+  <section class="screen" id="screen6">
+    <div class="text-center max-w-2xl">
+      <div class="mb-8">
+        <svg class="w-32 h-32 mx-auto heart-beat glow" viewBox="0 0 24 24" fill="currentColor" style="color: var(--accent-rose);">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+      
+      <p class="fade-in text-sm uppercase tracking-widest mb-4" style="color: var(--accent-gold);">
+        Para voce, Meu Amor
+      </p>
+      
+      <h1 class="fade-in font-display text-5xl md:text-7xl font-bold mb-8" style="color: var(--text-light);">
+        Eu Te Amo
+      </h1>
+      
+      <p class="fade-in text-lg md:text-xl leading-relaxed mb-8" style="color: var(--text-muted);">
+        Hoje, amanha e sempre. Voce e minha historia de amor favorita, 
+        e quero escrever cada capitulo ao seu lado.
+      </p>
+      
+      <div class="fade-in font-display text-xl italic" style="color: var(--accent-warm);">
+        Com amor<br>
+        <span style="color: var(--accent-gold);">Breno</span>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <script>
+    // ========================================
+    // CONFIGURAÇÕES
+    // ========================================
+    const GALLERY_IMAGES = [
+      "https://racial-white-9gxmkt4uzl.edgeone.app/WhatsApp%20Image%202026-04-03%20at%2000.07.41.jpeg",
+      "https://emotional-green-pn9wr5qv1j.edgeone.app/WhatsApp%20Image%202026-04-03%20at%2000.07.42%20(1).jpeg",
+      "https://informal-tan-fk7vt9yv6x.edgeone.app/WhatsApp%20Image%202026-04-03%20at%2000.07.42%20(2).jpeg"
+    ];
+
+    let currentScreen = 1;
+    let currentSlide = 0;
+    let musicPlaying = false;
+    let player;
+    let playerReady = false;
+
+    // Initialize particles
+    function createParticles() {
+      const container = document.getElementById('particles');
+      if (!container) return;
+      const particleCount = window.innerWidth < 640 ? 15 : 25;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = Math.random() > 0.7 ? 'particle heart' : 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+        
+        if (!particle.classList.contains('heart')) {
+          const size = 2 + Math.random() * 3;
+          particle.style.width = size + 'px';
+          particle.style.height = size + 'px';
+          particle.style.opacity = 0.3 + Math.random() * 0.4;
+        }
+        container.appendChild(particle);
+      }
+    }
+
+    // YouTube API Ready
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('youtube-player', {
+        videoId: '9BMwcO6_hyE', // ID do Bon Jovi
+        playerVars: {
+          'playsinline': 1,
+          'autoplay': 0,
+          'loop': 1,
+          'playlist': '9BMwcO6_hyE',
+          'controls': 0,
+          'showinfo': 0,
+          'rel': 0
+        },
+        events: {
+          'onReady': (event) => {
+            playerReady = true;
+            console.log("Player pronto");
+          }
+        }
+      });
+    }
+
+    // Music Control Functions
+    function playMusic() {
+      if (playerReady && player && typeof player.playVideo === 'function') {
+        player.playVideo();
+        musicPlaying = true;
+        document.getElementById('musicBtn').classList.add('playing');
+      }
+    }
+
+    function toggleMusic() {
+      if (!playerReady || !player) return;
+      
+      if (musicPlaying) {
+        player.pauseVideo();
+        document.getElementById('musicBtn').classList.remove('playing');
+      } else {
+        player.playVideo();
+        document.getElementById('musicBtn').classList.add('playing');
+      }
+      musicPlaying = !musicPlaying;
+    }
+
+    document.getElementById('musicBtn').addEventListener('click', toggleMusic);
+
+    // ========================================
+    // FUNÇÃO PRINCIPAL: INICIAR SITE
+    // ========================================
+    function startExperience() {
+      playMusic(); // Tenta tocar a música logo no primeiro clique
+      nextScreen(2);
+    }
+
+    // Screen transitions
+    function nextScreen(screenNum) {
+      const currentScreenEl = document.getElementById('screen' + currentScreen);
+      const nextScreenEl = document.getElementById('screen' + screenNum);
+      
+      if (currentScreenEl) currentScreenEl.classList.remove('active');
+      
+      setTimeout(() => {
+        if (nextScreenEl) {
+          nextScreenEl.classList.add('active');
+          const fadeElements = nextScreenEl.querySelectorAll('.fade-in');
+          fadeElements.forEach((el, index) => {
+            setTimeout(() => el.classList.add('visible'), index * 200);
+          });
+        }
+        
+        currentScreen = screenNum;
+        if (screenNum === 3) initGallery();
+      }, 400);
+    }
+
+    // Gallery
+    function initGallery() {
+      const nav = document.getElementById('galleryNav');
+      if (!nav) return;
+      nav.innerHTML = '';
+      
+      GALLERY_IMAGES.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.className = 'gallery-dot' + (index === 0 ? ' active' : '');
+        dot.onclick = () => goToSlide(index);
+        nav.appendChild(dot);
+      });
+      
+      setInterval(() => {
+        currentSlide = (currentSlide + 1) % GALLERY_IMAGES.length;
+        goToSlide(currentSlide);
+      }, 4000);
+    }
+
+    function goToSlide(index) {
+      const img = document.getElementById('galleryImg');
+      const dots = document.querySelectorAll('.gallery-dot');
+      
+      if (img && GALLERY_IMAGES[index]) {
+        img.style.opacity = '0';
+        setTimeout(() => {
+          img.src = GALLERY_IMAGES[index];
+          img.style.opacity = '1';
+        }, 300);
+      }
+      
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      currentSlide = index;
+    }
+
+    // Run away button
+    function runAwayFromButton() {
+      const btn = document.getElementById('noBtn');
+      if (!btn) return;
+      
+      const maxX = window.innerWidth - btn.offsetWidth - 50;
+      const maxY = window.innerHeight - btn.offsetHeight - 50;
+      
+      const randomX = Math.max(20, Math.random() * maxX);
+      const randomY = Math.max(20, Math.random() * maxY);
+      
+      btn.style.position = 'fixed';
+      btn.style.left = randomX + 'px';
+      btn.style.top = randomY + 'px';
+      btn.style.transform = 'scale(0.8)';
+    }
+
+    // Love Response
+    function showLoveResponse() {
+      nextScreen(5);
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => createHeartBurst(), i * 50);
+      }
+    }
+
+    function createHeartBurst() {
+      const heart = document.createElement('div');
+      heart.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" style="color: var(--accent-rose); width: 20px; height: 20px;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+      heart.style.cssText = `
+        position: fixed;
+        left: ${50 + (Math.random() - 0.5) * 40}%;
+        top: 50%;
+        pointer-events: none;
+        z-index: 1000;
+        animation: burst 1s ease-out forwards;
+      `;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 1000);
+    }
+
+    // Burst animation style
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = `
+      @keyframes burst {
+        0% { transform: translateY(0) scale(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(-200px) scale(1) rotate(45deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      createParticles();
+      const firstScreen = document.getElementById('screen1');
+      if (firstScreen) {
+        const fadeElements = firstScreen.querySelectorAll('.fade-in');
+        setTimeout(() => {
+          fadeElements.forEach((el, index) => {
+            setTimeout(() => el.classList.add('visible'), index * 200);
+          });
+        }, 300);
+      }
+    });
+  </script>
+</body>
+</html>
